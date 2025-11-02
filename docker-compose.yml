@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: ./taskmanager_backend/taskManager/taskManager   # exact folder where Dockerfile + pom.xml exist
+    container_name: taskmanager-backend
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./taskmanager_frontend
+    container_name: taskmanager-frontend
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    depends_on:
+      - backend
