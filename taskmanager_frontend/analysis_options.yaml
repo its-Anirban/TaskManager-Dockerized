@@ -1,0 +1,46 @@
+# analysis_options.yaml
+
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # Common rules
+    avoid_print: false           # Allow print() during development
+    prefer_const_constructors: true
+    prefer_const_literals_to_create_immutables: true
+    unnecessary_this: true
+    prefer_final_fields: true
+    prefer_single_quotes: true
+    unnecessary_new: true
+    prefer_interpolation_to_compose_strings: true
+
+    # Readability
+    sort_constructors_first: true
+    always_use_package_imports: true
+    directives_ordering: true
+    require_trailing_commas: true
+    prefer_final_locals: true
+    avoid_unnecessary_containers: true
+    prefer_is_not_empty: true
+
+    # Safety
+    avoid_init_to_null: true
+    avoid_returning_null_for_future: true
+    avoid_returning_null: true
+    avoid_empty_else: true
+    avoid_void_async: true
+    avoid_redundant_argument_values: true
+
+analyzer:
+  errors:
+    missing_return: error
+    dead_code: warning
+    unused_import: warning
+    prefer_const_constructors: warning
+    prefer_final_fields: warning
+
+  exclude:
+    - "build/**"
+    - "lib/generated/**"
+    - "ios/**"
+    - "android/**"

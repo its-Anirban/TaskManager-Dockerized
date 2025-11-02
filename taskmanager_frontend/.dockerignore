@@ -1,0 +1,21 @@
+# Flutter build and cache folders
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+pubspec.lock
+
+# OS / IDE files
+*.iml
+*.log
+*.tmp
+*.swp
+*.DS_Store
+.vscode/
+.idea/
+
+# Git files
+.git/
+.gitignore

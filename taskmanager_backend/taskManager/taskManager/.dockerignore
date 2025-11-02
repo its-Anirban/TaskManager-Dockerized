@@ -1,0 +1,24 @@
+# Build outputs
+target/
+
+# Maven and IDE junk
+.mvn/
+.settings/
+.classpath
+.project
+.idea/
+.vscode/
+*.iml
+
+# Logs and temp
+*.log
+*.tmp
+*.bak
+
+# Version control
+.git/
+.gitignore
+
+# OS cache files
+.DS_Store
+Thumbs.db
