@@ -97,7 +97,7 @@ class TaskCard extends StatelessWidget {
                       onPressed: () => _showEditDialog(context),
                       tooltip: 'Edit Task',
                     ),
-                    // Delete icon
+                    // Delete icon with confirmation dialog
                     IconButton(
                       icon: Icon(
                         Icons.delete_outline,
@@ -106,8 +106,50 @@ class TaskCard extends StatelessWidget {
                             ? Colors.white70
                             : const Color.fromARGB(160, 0, 0, 0),
                       ),
-                      onPressed: onDelete,
                       tooltip: 'Delete Task',
+                      onPressed: () async {
+                        final theme = Theme.of(context);
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: Text(
+                              'Confirm Deletion',
+                              style: TextStyle(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            content: const Text(
+                              'Are you sure you want to delete this task?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx, false),
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.7),
+                                  ),
+                                ),
+                              ),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: theme.colorScheme.primary,
+                                  foregroundColor:
+                                      theme.colorScheme.onPrimary,
+                                ),
+                                onPressed: () => Navigator.pop(ctx, true),
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (confirm == true) {
+                          onDelete?.call();
+                        }
+                      },
                     ),
                   ],
                 ),
@@ -134,6 +176,7 @@ class TaskCard extends StatelessWidget {
   }
 
   void _showEditDialog(BuildContext context) {
+    final theme = Theme.of(context);
     final titleController = TextEditingController(text: task.title);
     final descController = TextEditingController(text: task.description);
 
@@ -141,7 +184,13 @@ class TaskCard extends StatelessWidget {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('Edit Task'),
+          title: Text(
+            'Edit Task',
+            style: TextStyle(
+              color: theme.colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -158,9 +207,19 @@ class TaskCard extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color:
+                      theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                ),
+              ),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+              ),
               onPressed: () async {
                 final service = TaskService();
                 final updatedTask = TaskModel(
@@ -169,15 +228,13 @@ class TaskCard extends StatelessWidget {
                   description: descController.text.trim(),
                 );
 
-                // Close dialog immediately BEFORE async call
                 Navigator.pop(ctx);
 
                 try {
                   await service.updateTask(updatedTask);
 
-                  // Use parent context safely after await
                   if (context.mounted) {
-                    onEdit?.call(); // trigger refresh
+                    onEdit?.call();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Task updated successfully'),

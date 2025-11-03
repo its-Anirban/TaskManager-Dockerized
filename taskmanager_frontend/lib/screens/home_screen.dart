@@ -51,9 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _logout() {
     context.read<AuthBloc>().add(LogoutRequested());
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const LoginScreen()));
   }
 
   void _refreshTasks() {
@@ -71,14 +71,22 @@ class _HomeScreenState extends State<HomeScreen> {
         return Scaffold(
           backgroundColor: theme.scaffoldBackgroundColor,
           appBar: AppBar(
-            title: const Text(
-              'My Tasks',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
             centerTitle: true,
             backgroundColor: theme.colorScheme.primary,
             foregroundColor: theme.colorScheme.onPrimary,
             elevation: 2,
+            title: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.task_alt_rounded, size: 24),
+                SizedBox(width: 8),
+                Text(
+                  'Task Manager',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+
             actions: [
               IconButton(
                 tooltip: isDarkMode ? 'Light Mode' : 'Dark Mode',
@@ -140,8 +148,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 child: MasonryGridView.count(
                   padding: const EdgeInsets.all(16),
-                  crossAxisCount:
-                      MediaQuery.of(context).size.width < 600 ? 2 : 3,
+                  crossAxisCount: MediaQuery.of(context).size.width < 600
+                      ? 2
+                      : 3,
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,
                   physics: const BouncingScrollPhysics(
