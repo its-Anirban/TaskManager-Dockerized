@@ -6,6 +6,7 @@ import com.example.taskManager.dto.RegisterRequest;
 import com.example.taskManager.model.User;
 import com.example.taskManager.services.AuthService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,96 +15,68 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
+    private static final String ERROR_KEY = "error";
+    private static final String SUCCESS_MESSAGE = "message";
+    private static final String INTERNAL_ERROR_MESSAGE = "Internal server error";
 
     /**
-     * Registers a new user.
-     *
-     * Example request:
-     * {
-     *   "username": "anirban",
-     *   "password": "1234"
-     * }
+     * Register a new user.
      */
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest registerRequest) {
+    public ResponseEntity<Map<String, Object>> register(@RequestBody @Valid RegisterRequest request) {
         try {
-            User newUser = authService.register(
-                    registerRequest.getUsername(),
-                    registerRequest.getPassword()
-            );
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                    "message", "User registered successfully",
-                    "username", newUser.getUsername()
-            ));
+            User newUser = authService.register(request.getUsername(), request.getPassword());
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(Map.of(SUCCESS_MESSAGE, "User registered successfully", "username", newUser.getUsername()));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
+            // Handle known bad request issues
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(ERROR_KEY, e.getMessage()));
         } catch (Exception e) {
+            // Catch unexpected failures like DB down, etc.
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Internal server error"));
+                    .body(Map.of(ERROR_KEY, INTERNAL_ERROR_MESSAGE));
         }
     }
 
     /**
-     * Logs in an existing user and returns a JWT token.
-     *
-     * Example request:
-     * {
-     *   "username": "anirban",
-     *   "password": "1234"
-     * }
+     * Log in user and return JWT.
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest) {
+    public ResponseEntity<Object> login(@RequestBody @Valid LoginRequest request) {
         try {
-            String token = authService.login(
-                    loginRequest.getUsername(),
-                    loginRequest.getPassword()
-            );
-
+            String token = authService.login(request.getUsername(), request.getPassword());
             return ResponseEntity.ok(new LoginResponse(token));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(ERROR_KEY, e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Internal server error"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(ERROR_KEY, INTERNAL_ERROR_MESSAGE));
         }
     }
 
     /**
-     * Logs out a user by marking them as logged out in the DB.
-     *
-     * Example request:
-     * {
-     *   "username": "anirban"
-     * }
+     * Logout user.
      */
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestBody Map<String, String> body) {
+    public ResponseEntity<Map<String, Object>> logout(@RequestBody Map<String, String> body) {
         try {
             String username = body.get("username");
             if (username == null || username.isBlank()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(Map.of("error", "Username is required"));
+                        .body(Map.of(ERROR_KEY, "Username is required"));
             }
 
             authService.logout(username);
-            return ResponseEntity.ok(Map.of("message", "User logged out successfully"));
+            return ResponseEntity.ok(Map.of(SUCCESS_MESSAGE, "User logged out successfully"));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(ERROR_KEY, e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Internal server error"));
+                    .body(Map.of(ERROR_KEY, INTERNAL_ERROR_MESSAGE));
         }
     }
 }

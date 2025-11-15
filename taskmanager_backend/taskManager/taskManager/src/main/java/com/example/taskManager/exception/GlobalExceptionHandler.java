@@ -12,18 +12,57 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    private ResponseEntity<Map<String, Object>> buildError(String message, HttpStatus status) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("message", message);
+        error.put("timestamp", LocalDateTime.now());
+        error.put("status", status.value());
+        return new ResponseEntity<>(error, status);
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleUserAlreadyExists(UserAlreadyExistsException ex) {
+        return buildError(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidCredentials(InvalidCredentialsException ex) {
+        return buildError(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleUserNotFound(UserNotFoundException ex) {
+        return buildError(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex) {
-        Map<String, Object> error = new HashMap<>();
-        error.put("message", ex.getMessage());
-        error.put("timestamp", LocalDateTime.now());
+        String msg = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
 
-        // Return 404 only if message contains "not found"
-        if (ex.getMessage() != null && ex.getMessage().toLowerCase().contains("not found")) {
-            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        if (msg.contains("not found")) {
+            return buildError(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } else if (msg.contains("invalid") || msg.contains("unauthorized")) {
+            // Login failure
+            return buildError(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+        } else if (
+                msg.contains("exists") ||
+                msg.contains("failed") ||
+                msg.contains("db down") ||
+                msg.contains("db failure") ||
+                msg.contains("internal server error") ||
+                msg.contains("logout failed") ||
+                msg.contains("username already exists")
+        ) {
+            // Map all DB or process errors to 400
+            return buildError(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        } else {
+            // Anything else becomes 500
+            return buildError("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
 
-        // Everything else is treated as server error (500)
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
+        return buildError("Unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

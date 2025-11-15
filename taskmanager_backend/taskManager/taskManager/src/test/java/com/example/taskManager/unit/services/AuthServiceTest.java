@@ -7,6 +7,7 @@ import com.example.taskManager.services.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -26,18 +27,18 @@ class AuthServiceTest {
         void setup() {
                 userRepository = mock(UserRepository.class);
                 jwtUtil = new JwtUtil();
+                ReflectionTestUtils.setField(jwtUtil, "secretKey", "DevelopmentOnlySecretKeyForTaskManager123456");
                 passwordEncoder = mock(PasswordEncoder.class);
                 authService = new AuthService(userRepository, jwtUtil, passwordEncoder);
 
-                // Common stubbing for password encoder
-                when(passwordEncoder.encode(anyString()))
-                                .thenAnswer(inv -> "hashed_" + inv.getArgument(0));
+                when(passwordEncoder.encode(anyString())).thenAnswer(inv -> "hashed_" + inv.getArgument(0));
                 when(passwordEncoder.matches(anyString(), anyString()))
                                 .thenAnswer(inv -> {
-                                        String raw = inv.getArgument(0);
-                                        String hashed = inv.getArgument(1);
-                                        return hashed.contains(raw); // simplistic match simulation
+                                        String raw = (String) inv.getArgument(0);
+                                        String encoded = (String) inv.getArgument(1);
+                                        return encoded.contains(raw);
                                 });
+
         }
 
         @Test
@@ -45,8 +46,7 @@ class AuthServiceTest {
                 User user = new User("demoUser", "hashed_1234");
                 user.setLoggedIn(false);
 
-                when(userRepository.findByUsername("demoUser"))
-                                .thenReturn(Optional.of(user));
+                when(userRepository.findByUsername("demoUser")).thenReturn(Optional.of(user));
 
                 String token = authService.login("demoUser", "1234");
 
@@ -60,8 +60,7 @@ class AuthServiceTest {
         @Test
         void shouldThrowWhenInvalidPassword() {
                 User user = new User("demoUser", "hashed_1234");
-                when(userRepository.findByUsername("demoUser"))
-                                .thenReturn(Optional.of(user));
+                when(userRepository.findByUsername("demoUser")).thenReturn(Optional.of(user));
 
                 RuntimeException ex = assertThrows(RuntimeException.class,
                                 () -> authService.login("demoUser", "wrong"));
@@ -74,15 +73,12 @@ class AuthServiceTest {
 
         @Test
         void shouldThrowWhenUserNotFoundDuringLogin() {
-                when(userRepository.findByUsername("ghostUser"))
-                                .thenReturn(Optional.empty());
+                when(userRepository.findByUsername("ghostUser")).thenReturn(Optional.empty());
 
                 RuntimeException ex = assertThrows(RuntimeException.class,
                                 () -> authService.login("ghostUser", "pass"));
 
-                // Your AuthService actually throws “Invalid username or password”
-                assertTrue(
-                                ex.getMessage().toLowerCase().contains("invalid"),
+                assertTrue(ex.getMessage().toLowerCase().contains("invalid"),
                                 "Error message should indicate invalid credentials or user not found");
                 verify(userRepository).findByUsername("ghostUser");
         }
@@ -92,8 +88,7 @@ class AuthServiceTest {
                 User user = new User("demoUser", "hashed_1234");
                 user.setLoggedIn(true);
 
-                when(userRepository.findByUsername("demoUser"))
-                                .thenReturn(Optional.of(user));
+                when(userRepository.findByUsername("demoUser")).thenReturn(Optional.of(user));
 
                 authService.logout("demoUser");
 
@@ -104,8 +99,7 @@ class AuthServiceTest {
 
         @Test
         void shouldThrowWhenUserNotFoundDuringLogout() {
-                when(userRepository.findByUsername("ghostUser"))
-                                .thenReturn(Optional.empty());
+                when(userRepository.findByUsername("ghostUser")).thenReturn(Optional.empty());
 
                 RuntimeException ex = assertThrows(RuntimeException.class, () -> authService.logout("ghostUser"));
 
@@ -118,8 +112,7 @@ class AuthServiceTest {
         @Test
         void shouldRegisterNewUserSuccessfully() {
                 when(userRepository.existsByUsername("newUser")).thenReturn(false);
-                when(userRepository.save(any(User.class)))
-                                .thenAnswer(inv -> inv.getArgument(0));
+                when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
 
                 User result = authService.register("newUser", "1234");
 
@@ -142,5 +135,4 @@ class AuthServiceTest {
                 verify(userRepository).existsByUsername("existingUser");
                 verify(userRepository, never()).save(any());
         }
-
 }

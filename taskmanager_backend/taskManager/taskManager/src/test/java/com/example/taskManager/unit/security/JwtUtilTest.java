@@ -4,6 +4,8 @@ import com.example.taskManager.security.JwtUtil;
 import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -11,10 +13,12 @@ import static org.mockito.Mockito.*;
 class JwtUtilTest {
 
     private JwtUtil jwtUtil;
-
     @BeforeEach
-    void setup() {
-        jwtUtil = spy(new JwtUtil());
+    void setUp() {
+        jwtUtil = new JwtUtil();
+        ReflectionTestUtils.setField(jwtUtil, "secretKey", "DevelopmentOnlySecretKeyForTaskManager123456");
+
+        Mockito.mock(JwtUtil.class);
     }
 
     @Test
@@ -49,22 +53,26 @@ class JwtUtilTest {
 
     @Test
     void validateToken_shouldReturnFalse_whenTokenMalformed() {
-        doThrow(new JwtException("Malformed")).when(jwtUtil).extractAllClaims("bad_token");
+        JwtUtil spyJwt = spy(jwtUtil); // create a spy, not use real object
 
-        boolean result = jwtUtil.validateToken("bad_token");
+        doThrow(new JwtException("Malformed")).when(spyJwt).extractAllClaims("bad_token");
+
+        boolean result = spyJwt.validateToken("bad_token");
 
         assertFalse(result, "Expected validateToken() to return false for malformed token");
-        verify(jwtUtil).extractAllClaims("bad_token");
+        verify(spyJwt).extractAllClaims("bad_token");
     }
 
     @Test
     void validateTokenWithUsername_shouldReturnFalse_whenExtractionFails() {
-        doThrow(new RuntimeException("decode failed")).when(jwtUtil).extractUsername("broken_token");
+        JwtUtil spyJwt = spy(jwtUtil);
 
-        boolean result = jwtUtil.validateToken("broken_token", "user");
+        doThrow(new RuntimeException("decode failed")).when(spyJwt).extractUsername("broken_token");
+
+        boolean result = spyJwt.validateToken("broken_token", "user");
 
         assertFalse(result, "Expected validateToken(token, username) to return false when extraction fails");
-        verify(jwtUtil).extractUsername("broken_token");
+        verify(spyJwt).extractUsername("broken_token");
     }
 
     @Test
@@ -118,7 +126,7 @@ class JwtUtilTest {
             @Override
             public String generateToken(String username) {
                 return io.jsonwebtoken.Jwts.builder()
-                        .setSubject("tokenUser") // mismatch username
+                        .setSubject("tokenUser")
                         .setExpiration(new java.util.Date(System.currentTimeMillis() - 1000))
                         .signWith(new javax.crypto.spec.SecretKeySpec(
                                 "change-this-to-a-secure-32-char-min-secret-key!".getBytes(),

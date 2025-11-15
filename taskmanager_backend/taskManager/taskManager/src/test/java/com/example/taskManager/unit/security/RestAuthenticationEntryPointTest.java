@@ -22,12 +22,18 @@ class RestAuthenticationEntryPointTest {
         HttpServletResponse response = mock(HttpServletResponse.class);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        // Create a mock ServletOutputStream that writes to ByteArrayOutputStream
         ServletOutputStream servletOutputStream = new ServletOutputStream() {
             @Override
-            public boolean isReady() { return true; }
+            public boolean isReady() {
+                return true;
+            }
 
             @Override
-            public void setWriteListener(WriteListener writeListener) { }
+            public void setWriteListener(WriteListener writeListener) {
+                // No asynchronous I/O is required in this test mock — method intentionally left blank.
+            }
 
             @Override
             public void write(int b) throws IOException {
@@ -43,9 +49,10 @@ class RestAuthenticationEntryPointTest {
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         verify(response).setContentType("application/json");
 
-        // Optional: validate JSON output if applicable
+        // Optional: Validate JSON or text output content if applicable
         String output = baos.toString();
-        assertTrue(output.contains("Unauthorized") || output.length() > 0);
+        assertTrue(output.contains("Unauthorized") || !output.isEmpty(),
+                "Response should contain unauthorized message or non-empty content");
     }
 
     @Test
@@ -60,5 +67,4 @@ class RestAuthenticationEntryPointTest {
                 entryPoint.commence(request, response,
                         new org.springframework.security.core.AuthenticationException("Unauthorized") {}));
     }
-
 }

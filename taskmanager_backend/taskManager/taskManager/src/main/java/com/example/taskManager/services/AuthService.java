@@ -1,5 +1,8 @@
 package com.example.taskManager.services;
 
+import com.example.taskManager.exception.InvalidCredentialsException;
+import com.example.taskManager.exception.UserAlreadyExistsException;
+import com.example.taskManager.exception.UserNotFoundException;
 import com.example.taskManager.model.User;
 import com.example.taskManager.repository.UserRepository;
 import com.example.taskManager.security.JwtUtil;
@@ -23,16 +26,16 @@ public class AuthService {
      * Registers a new user by encoding the password and saving to DB.
      */
     public User register(String username, String password) {
+
         if (userRepository.existsByUsername(username)) {
-            throw new RuntimeException("Username already exists");
+            throw new UserAlreadyExistsException("Username already exists");
         }
 
-        // Encode password with BCrypt before saving
+        // Hash password first
         String hashedPassword = passwordEncoder.encode(password);
 
-        User newUser = new User();
-        newUser.setUsername(username);
-        newUser.setPassword(hashedPassword);
+        // Create user using the constructor we added (generic-ready)
+        User newUser = new User(username, hashedPassword);
         newUser.setLoggedIn(false);
 
         return userRepository.save(newUser);
@@ -42,12 +45,12 @@ public class AuthService {
      * Authenticates a user and generates a JWT if successful.
      */
     public String login(String username, String password) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
 
-        // Verify hashed password
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid username or password"));
+
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Invalid username or password");
+            throw new InvalidCredentialsException("Invalid username or password");
         }
 
         user.setLoggedIn(true);
@@ -57,11 +60,12 @@ public class AuthService {
     }
 
     /**
-     * Logs out a user (optional, JWTs still valid until expiration).
+     * Logs out a user (optional, JWT remains valid until expiration).
      */
     public void logout(String username) {
+
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         user.setLoggedIn(false);
         userRepository.save(user);

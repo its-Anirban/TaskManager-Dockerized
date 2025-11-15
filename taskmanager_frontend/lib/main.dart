@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:task_manager_app/blocs/auth_bloc/auth_bloc.dart';
-import 'package:task_manager_app/blocs/task_bloc/task_bloc.dart';
-import 'package:task_manager_app/blocs/theme_bloc/theme_bloc.dart';
-import 'package:task_manager_app/blocs/theme_bloc/theme_event.dart';
-import 'package:task_manager_app/blocs/theme_bloc/theme_state.dart';
-import 'package:task_manager_app/screens/home_screen.dart';
-import 'package:task_manager_app/screens/login_screen.dart';
-import 'package:task_manager_app/services/auth_service.dart';
-import 'package:task_manager_app/services/task_service.dart';
+import 'package:task_manager_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:task_manager_app/features/tasks/domain/task_bloc.dart';
+import 'package:task_manager_app/features/theme/presentation/theme_bloc.dart';
+import 'package:task_manager_app/features/theme/presentation/theme_event.dart';
+import 'package:task_manager_app/features/theme/presentation/theme_state.dart';
+import 'package:task_manager_app/features/tasks/presentation/home_screen.dart';
+import 'package:task_manager_app/features/auth/presentation/login_screen.dart';
+import 'package:task_manager_app/features/auth/data/auth_service.dart';
+import 'package:task_manager_app/features/tasks/data/task_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

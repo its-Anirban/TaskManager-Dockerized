@@ -111,9 +111,13 @@ class TaskServiceIT {
         User otherUser = new User("otherUser", "otherPass");
         userRepository.save(otherUser);
 
-        // Expect an exception when trying to access with wrong username
+        // Prepare the throwing call separately
+        Long taskId = saved.getId();
+        String otherUsername = otherUser.getUsername();
+
+        // Single invocation inside assertThrows
         RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> taskService.getTaskByIdForUser(saved.getId(), "otherUser"),
+                () -> taskService.getTaskByIdForUser(taskId, otherUsername),
                 "Access should be denied for other users");
 
         assertTrue(ex.getMessage().toLowerCase().contains("not found"),
@@ -127,10 +131,15 @@ class TaskServiceIT {
         nonExistent.setDescription("Does not exist");
         nonExistent.setCompleted(false);
 
+        Long invalidTaskId = 99999L;
+        String username = demoUser.getUsername();
+
+        // Only one method call inside lambda
         RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> taskService.updateTaskForUser(99999L, nonExistent, "demoUser"));
+                () -> taskService.updateTaskForUser(invalidTaskId, nonExistent, username));
 
         assertTrue(ex.getMessage().toLowerCase().contains("not found"),
                 "Exception should indicate 'not found'");
     }
+
 }

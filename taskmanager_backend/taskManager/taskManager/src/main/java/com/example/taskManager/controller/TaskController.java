@@ -1,9 +1,11 @@
 package com.example.taskManager.controller;
 
+import com.example.taskManager.exception.UserNotFoundException;
 import com.example.taskManager.model.Task;
 import com.example.taskManager.model.User;
-import com.example.taskManager.services.TaskService;
 import com.example.taskManager.repository.UserRepository;
+import com.example.taskManager.services.TaskService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,15 +15,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tasks")
+@RequiredArgsConstructor
 public class TaskController {
 
     private final TaskService taskService;
     private final UserRepository userRepository;
-
-    public TaskController(TaskService taskService, UserRepository userRepository) {
-        this.taskService = taskService;
-        this.userRepository = userRepository;
-    }
 
     /**
      * Create a new task and automatically link it to the logged-in user.
@@ -30,10 +28,10 @@ public class TaskController {
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         Task savedTask = taskService.createTaskForUser(task, user);
-        return new ResponseEntity<>(savedTask, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
     }
 
     /**
@@ -43,7 +41,7 @@ public class TaskController {
     public ResponseEntity<List<Task>> getAllTasksForUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         List<Task> tasks = taskService.getTasksForUser(username);
-        return new ResponseEntity<>(tasks, HttpStatus.OK);
+        return ResponseEntity.ok(tasks);
     }
 
     /**
@@ -53,7 +51,7 @@ public class TaskController {
     public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Task task = taskService.getTaskByIdForUser(id, username);
-        return new ResponseEntity<>(task, HttpStatus.OK);
+        return ResponseEntity.ok(task);
     }
 
     /**
@@ -63,7 +61,7 @@ public class TaskController {
     public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task updatedTask) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Task task = taskService.updateTaskForUser(id, updatedTask, username);
-        return new ResponseEntity<>(task, HttpStatus.OK);
+        return ResponseEntity.ok(task);
     }
 
     /**
@@ -73,6 +71,6 @@ public class TaskController {
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         taskService.deleteTaskForUser(id, username);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,4 +1,9 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive",
-    "java.compile.nullAnalysis.mode": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "maven.view": "hierarchical",
+    "sonarlint.connectedMode.project": {
+        "connectionId": "mypersonalproject005",
+        "projectKey": "taskmanager_frontend"
+    }
 }
