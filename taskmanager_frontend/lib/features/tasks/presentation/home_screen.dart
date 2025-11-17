@@ -4,15 +4,15 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:task_manager_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:task_manager_app/features/auth/presentation/bloc/auth_event.dart';
-import 'package:task_manager_app/features/tasks/domain/task_bloc.dart';
+import 'package:task_manager_app/features/auth/presentation/login_screen.dart';
+import 'package:task_manager_app/features/tasks/presentation/add_task_dialog.dart';
+import 'package:task_manager_app/features/tasks/presentation/bloc/task_bloc.dart';
 import 'package:task_manager_app/features/tasks/presentation/bloc/task_event.dart';
 import 'package:task_manager_app/features/tasks/presentation/bloc/task_state.dart';
+import 'package:task_manager_app/features/tasks/presentation/task_card.dart';
 import 'package:task_manager_app/features/theme/presentation/theme_bloc.dart';
 import 'package:task_manager_app/features/theme/presentation/theme_event.dart';
 import 'package:task_manager_app/features/theme/presentation/theme_state.dart';
-import 'package:task_manager_app/features/auth/presentation/login_screen.dart';
-import 'package:task_manager_app/features/tasks/presentation/add_task_dialog.dart';
-import 'package:task_manager_app/features/tasks/presentation/task_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

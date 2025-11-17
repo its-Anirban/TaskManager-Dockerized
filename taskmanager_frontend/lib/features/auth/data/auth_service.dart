@@ -5,15 +5,19 @@ import 'package:task_manager_app/features/auth/data/auth_response.dart';
 import 'package:task_manager_app/src/core/utils/constants.dart';
 
 class AuthService {
-  /// Uses provided baseUrl or falls back to Constants.baseUrl
-  AuthService({String? baseUrl}) : _baseUrl = baseUrl ?? Constants.baseUrl;
+  AuthService({
+    String? baseUrl,
+    http.Client? client,
+  })  : _baseUrl = baseUrl ?? Constants.baseUrl,
+        _client = client ?? http.Client();
 
   final String _baseUrl;
+  final http.Client _client;
 
   Future<LoginResponse> login(String username, String password) async {
     final url = Uri.parse('$_baseUrl/api/auth/login');
 
-    final res = await http.post(
+    final res = await _client.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'username': username, 'password': password}),
@@ -23,7 +27,6 @@ class AuthService {
       final data = json.decode(res.body);
       final lr = LoginResponse.fromMap(data);
 
-      // Persist token
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(Constants.tokenKey, lr.token);
 
@@ -37,7 +40,7 @@ class AuthService {
   Future<void> register(String username, String password) async {
     final url = Uri.parse('$_baseUrl/api/auth/register');
 
-    final res = await http.post(
+    final res = await _client.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'username': username, 'password': password}),

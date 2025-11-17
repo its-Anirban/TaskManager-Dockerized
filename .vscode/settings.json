@@ -1,7 +1,7 @@
 {
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.compile.nullAnalysis.mode": "automatic",
-    "maven.view": "hierarchical",
+    "maven.view": "flat",
     "sonarlint.connectedMode.project": {
         "connectionId": "mypersonalproject005",
         "projectKey": "taskmanager_frontend"

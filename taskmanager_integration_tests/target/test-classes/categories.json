@@ -1,0 +1,4 @@
+[
+  {"name":"Critical","matchedStatuses":["FAILED"]},
+  {"name":"Minor","matchedStatuses":["BROKEN"]}
+]

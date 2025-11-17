@@ -33,19 +33,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        // Allow preflight CORS requests (OPTIONS) without any authentication
+        // Allow preflight CORS requests (OPTIONS)
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Skip public endpoints and H2 console
-        if (path.startsWith("/api/auth") || path.startsWith("/h2-console") || path.equals("/error")) {
+        // Skip public endpoints
+        if (path.startsWith("/api/auth")
+                || path.startsWith("/h2-console")
+                || path.startsWith("/actuator")     // <-- Important for health checks & metrics
+                || path.equals("/error")) {
+
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Check for Authorization header
+        // Check Authorization header for protected endpoints
         final String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith("Bearer ")) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -64,14 +68,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Validate token and set security context
+        // Validate token and load user
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 if (jwtUtil.validateToken(token, userDetails.getUsername())) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
-                            null, userDetails.getAuthorities());
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails, null, userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 } else {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -83,17 +88,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 response.getWriter().write("{\"error\":\"User authentication failed\"}");
                 return;
             }
-
         }
 
         filterChain.doFilter(request, response);
     }
 
+    /**
+     * Helper for unit tests. Required so Docker builds do not fail.
+     */
     public void invokeFilterForTest(
             jakarta.servlet.http.HttpServletRequest request,
             jakarta.servlet.http.HttpServletResponse response,
-            jakarta.servlet.FilterChain chain) throws java.io.IOException, jakarta.servlet.ServletException {
+            jakarta.servlet.FilterChain chain
+    ) throws java.io.IOException, jakarta.servlet.ServletException {
         doFilterInternal(request, response, chain);
     }
-
 }

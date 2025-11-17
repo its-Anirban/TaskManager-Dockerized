@@ -1,0 +1,15 @@
+com\example\taskManager\integration\support\JsonHelper.class
+com\example\taskManager\integration\support\JwtTokenHelper.class
+com\example\taskManager\integration\support\TestContext.class
+com\example\taskManager\integration\config\EnvironmentConfig.class
+com\example\taskManager\integration\stepdefinitions\CommonStepDefinitions.class
+com\example\taskManager\integration\support\CucumberHooks.class
+com\example\taskManager\integration\support\TokenStorage.class
+com\example\taskManager\integration\stepdefinitions\TaskStepDefinitions.class
+com\example\taskManager\integration\config\BaseAssuredConfiguration.class
+com\example\taskManager\integration\stepdefinitions\AuthenticationStepDefinitions.class
+com\example\taskManager\integration\config\RestAssuredConfig.class
+com\example\taskManager\integration\support\ApiClient.class
+com\example\taskManager\integration\config\TestConfiguration.class
+com\example\taskManager\integration\runners\TaskManagerTestRunner.class
+com\example\taskManager\integration\support\AssertionHelper.class

@@ -1,0 +1,5 @@
+base:
+  url: http://localhost:8080
+jwt:
+  secret: your_jwt_secret_here_for_tests
+  expirationMs: 3600000

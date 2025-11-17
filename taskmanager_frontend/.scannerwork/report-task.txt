@@ -3,5 +3,5 @@ projectKey=taskmanager_frontend
 serverUrl=https://sonarcloud.io
 serverVersion=8.0.0.76487
 dashboardUrl=https://sonarcloud.io/dashboard?id=taskmanager_frontend
-ceTaskId=AZp9oCN67JDQFnmRTuAT
-ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZp9oCN67JDQFnmRTuAT
+ceTaskId=AZqHB2vpVGdyBAYiio5M
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZqHB2vpVGdyBAYiio5M

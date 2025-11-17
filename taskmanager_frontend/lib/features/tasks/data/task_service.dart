@@ -1,7 +1,8 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
-import 'package:task_manager_app/features/tasks/data/task_model.dart';
 import 'package:task_manager_app/features/auth/data/auth_service.dart';
+import 'package:task_manager_app/features/tasks/data/task_model.dart';
 import 'package:task_manager_app/src/core/utils/constants.dart';
 
 class TaskService {

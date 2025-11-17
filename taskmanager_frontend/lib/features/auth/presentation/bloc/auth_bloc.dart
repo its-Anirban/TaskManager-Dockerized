@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_manager_app/features/auth/data/auth_service.dart';
 import 'package:task_manager_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:task_manager_app/features/auth/presentation/bloc/auth_state.dart';
-import 'package:task_manager_app/features/auth/data/auth_service.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
 

@@ -4,11 +4,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:task_manager_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:task_manager_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:task_manager_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:task_manager_app/features/auth/presentation/register_screen.dart';
+import 'package:task_manager_app/features/tasks/presentation/home_screen.dart';
 import 'package:task_manager_app/features/theme/presentation/theme_bloc.dart';
 import 'package:task_manager_app/features/theme/presentation/theme_event.dart';
 import 'package:task_manager_app/features/theme/presentation/theme_state.dart';
-import 'package:task_manager_app/features/tasks/presentation/home_screen.dart';
-import 'package:task_manager_app/features/auth/presentation/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

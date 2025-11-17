@@ -1,0 +1,8 @@
+"BROKEN","EPIC","FAILED","FEATURE","PASSED","SKIPPED","STORY","UNKNOWN"
+"0","","0","Authentication API","1","0","Login with valid credentials","0"
+"0","","0","Health check","1","0","Backend health endpoint responds","0"
+"0","","0","Task creation","1","0","Create a new task for logged in user","0"
+"0","","0","Task fetching","1","0","Fetch tasks for logged-in user","0"
+"0","","0","Task update","1","0","Update an existing task","0"
+"0","","0","Authentication API","1","0","Register a new user successfully","0"
+"0","","0","Task deletion","1","0","Delete an existing task","0"
