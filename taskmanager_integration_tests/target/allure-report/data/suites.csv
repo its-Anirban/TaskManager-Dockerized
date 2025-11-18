@@ -1,8 +1,0 @@
-"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","332","Login with valid credentials","","2025-11-16","passed","2025-11-16","","Authentication API","Login with valid credentials",""
-"","120","Backend health endpoint responds","","2025-11-16","passed","2025-11-16","","Health check","Backend health endpoint responds",""
-"","299","Create a new task for logged in user","","2025-11-16","passed","2025-11-16","","Task creation","Create a new task for logged in user",""
-"","186","Fetch tasks for logged-in user","","2025-11-16","passed","2025-11-16","","Task fetching","Fetch tasks for logged-in user",""
-"","247","Update an existing task","","2025-11-16","passed","2025-11-16","","Task update","Update an existing task",""
-"","3253","Register a new user successfully","","2025-11-16","passed","2025-11-16","","Authentication API","Register a new user successfully",""
-"","273","Delete an existing task","","2025-11-16","passed","2025-11-16","","Task deletion","Delete an existing task",""
