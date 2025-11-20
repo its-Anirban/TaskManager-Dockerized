@@ -1,4 +1,5 @@
 [
-  {"name":"Critical","matchedStatuses":["FAILED"]},
-  {"name":"Minor","matchedStatuses":["BROKEN"]}
+  { "name": "Critical", "matchedStatuses": ["failed"] },
+  { "name": "Minor", "matchedStatuses": ["broken"] },
+  { "name": "Passed", "matchedStatuses": ["passed"] }
 ]

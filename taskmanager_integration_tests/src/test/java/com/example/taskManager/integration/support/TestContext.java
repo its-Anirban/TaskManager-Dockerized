@@ -9,22 +9,22 @@ public class TestContext {
     private static final Map<String, Object> ctx = new HashMap<>();
     private static Response lastResponse;
 
-    public static void put(String k, Object v) { 
-        ctx.put(k, v); 
+    public static void put(String key, Object value) {
+        ctx.put(key, value);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T get(String k, Class<T> clz) { 
-        return (T) ctx.get(k); 
+    public static <T> T get(String key) {
+        return (T) ctx.get(key);
     }
 
-    public static void clear() { 
-        ctx.clear(); 
+    public static void clear() {
+        ctx.clear();
         lastResponse = null;
     }
 
-    public static void setLastResponse(Response r) {
-        lastResponse = r;
+    public static void setLastResponse(Response response) {
+        lastResponse = response;
     }
 
     public static Response getLastResponse() {
